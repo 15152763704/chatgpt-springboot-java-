@@ -1,0 +1,49 @@
+{
+  "pages": [  
+    "pages/message/message",
+    "pages/tabs/tabs",
+    "pages/mine/mine",
+    "pages/test/test",
+    "pages/hy/hy",
+    "pages/tabXiaoshuo/tabXiaoshuo"
+  ],
+  "window":{
+    "navigationBarBackgroundColor": "#000",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "",
+    "backgroundColor": "#eee",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "backgroundColor":"#000000",
+    "selectedColor":"#1aad19",
+    "color":"#ffffff",
+    "list": [{
+      "pagePath": "pages/message/message",
+      "iconPath":"image/wechat.png",
+      "selectedIconPath":"image/wechat_2.png",
+      "text": "AI聊天"
+    },{
+      "pagePath": "pages/tabs/tabs",
+      "iconPath":"image/find.png",
+      "selectedIconPath":"image/find_2.png",
+      "text": "创作灵感"
+    }, {
+      "pagePath": "pages/mine/mine",
+      "iconPath":"image/mine.png",
+      "selectedIconPath":"image/mine_2.png",
+      "text": "我的"
+    }]
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "usingComponents": {
+    "mp-vtabs": "@miniprogram-component-plus/vtabs",
+    "mp-tabs": "@miniprogram-component-plus/tabs",
+    "mp-vtabs-content": "@miniprogram-component-plus/vtabs-content"
+
+  },
+  "debug": true
+}

@@ -1,0 +1,25 @@
+<view>
+  <view class="hy_banner"></view>
+
+  <view class="hy_container"> 
+    <view class="hy_zs_container">
+      <view>
+        <view class="yjhyzs_label">永久会员专属</view>
+      </view>
+      <view class="yjhyzs_b_container">
+        <view class="yjhyzs_b_item">生成AI人像功能</view>
+        <view class="yjhyzs_b_item">不限次数问答</view>
+      </view>
+    </view>
+    <view class="hy_type_container">
+      <view class="hy_type_item {{ index==choosedHyType?'active':'' }}" wx:for="{{hyList}}" bindtap="chooseType" data-index="{{index}}" >
+        <view class="hy_title {{ item.hyTitle==''?'hyTitleNull':'' }}">{{item.hyTitle}}</view>
+        <view class="hy_name">{{item.hyName}}</view>
+        <view class="hy_price">￥{{item.hyPrice}}</view>
+        <view class="hy_old_price">￥{{item.hyOldPrice}}</view>
+        <view class="hy_avg_price">{{item.avgPrice}}元/天</view>
+      </view>
+    </view>
+    <button class="ljkt_btn" bindtap="goPay">立即开通</button>
+  </view>
+</view>

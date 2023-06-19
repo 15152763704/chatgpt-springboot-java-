@@ -1,0 +1,27 @@
+
+<view   class="banner_title">
+  <view>HI,</view>
+  <view>我是您的AI创作师</view>
+</view>
+<mp-tabs 
+  tabs="{{tabs}}" 
+  activeTab="{{activeTab}}" 
+  swiperClass="weui-tabs-swiper"
+  bindtabclick="onTabCLick"
+  bindchange="onChange"
+  activeClass="tab-bar-title__selected"
+  tab-background-color="#000000"
+  tab-inactive-text-color="#ffffff"
+  tab-active-text-color="rgb(17, 194, 17)"
+>
+  <block wx:for="{{tabs}}" wx:key="title" wx:for-item="item">
+    <scroll-view class="tab-scroll-content" slot="tab-content-{{index}}" scroll-y="true" scroll-top="{{0}}"   animation="{{1}}">
+      <view  class="tab-content" wx:for="{{item.list}}" wx:for-item="fun" bindtap="goXiaoshuo" data-id="{{fun.id}}"  data-fun="{{fun.functionName}}">
+        <image src="{{fun.logo}}" />
+        <view class="detail_title">{{fun.functionName}}</view>
+        <view  class="detail_description">{{fun.description}}</view>
+      </view>
+      <view style="height: 90rpx;"></view>
+    </scroll-view>
+  </block>
+</mp-tabs>

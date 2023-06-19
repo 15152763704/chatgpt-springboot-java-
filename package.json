@@ -1,0 +1,16 @@
+{
+  "name": "chatgpt-wx",
+  "version": "1.0.0",
+  "description": "weApp for wechat by liujians [http://liujians.me](http://liujians.me) <hr/>",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@miniprogram-component-plus/tabs": "^1.0.0",
+    "@miniprogram-component-plus/vtabs": "^1.0.0",
+    "@miniprogram-component-plus/vtabs-content": "^1.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "mp-tabs": "../../miniprogram_npm/@miniprogram-component-plus/tabs/index"
+  }
+}

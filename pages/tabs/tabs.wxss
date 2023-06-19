@@ -1,0 +1,86 @@
+
+page{
+  background: -webkit-linear-gradient(top,rgb(0, 0, 0),rgb(19, 23, 41),#1e2d72);
+  height: 100%;
+}
+
+.banner_title{
+  letter-spacing: 10rpx;
+  font-size:50rpx;
+  background-image: -webkit-linear-gradient(left, #147B96, #E6D205 25%, #147B96 50%, #E6D205 75%, #147B96);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-background-size: 200% 100%;
+  height: 200rpx;
+  line-height: 100rpx;
+  text-align: left;
+  padding-left: 30rpx;
+  font-style: italic;
+}
+
+.weui-tabs-bar__wrp {
+    border-bottom: 1px solid rgb(0, 0, 0);
+}
+
+.weui-tabs-swiper {
+    width: 100%;
+    height: 100px;
+}
+
+.tab-content {
+    width: calc( 33.3vw - 40rpx );
+    height: 400rpx;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5rpx;
+    border-radius: 20rpx;
+    color: #ffffff;
+    margin-right: 30rpx;
+    margin-bottom: 30rpx;
+    line-height: 30rpx;
+    overflow: hidden;
+}
+.tab-content image{
+  max-width: 100%;
+  border-radius: 20rpx;
+  height: 240rpx;
+}
+.tab-content .detail_title{
+  font-size: 40rpx;
+  text-align: center;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-style: italic;
+}
+.tab-content .detail_description{
+  font-size: 25rpx;
+  color: rgb(156, 145, 145);
+  text-align: center;
+}
+
+.weui-tabs-bar__title {
+    margin: 0px 10px;
+}
+
+.tab-bar-title__selected {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.weui-tabs{
+  height: calc( 100vh - 200rpx );
+}
+.weui-tabs-swiper{
+  height: calc( 100vh - 274rpx )
+}
+.weui-tabs-bar__title{
+  height: 60rpx;
+}
+
+.tab-scroll-content{
+  height:calc( 100vh - 274rpx );
+  padding-left: 30rpx;
+  padding-top: 30rpx;
+}

@@ -1,0 +1,34 @@
+
+<view >
+  <scroll-view class="p_con" scroll-y="true" scroll-top="{{scrollTop}}">
+    <view style="margin-left: 40rpx;padding-bottom: 80rpx;">
+      <block wx:for="{{pageInfo}}" wx:for-item="item" wx:for-index="outIndex">
+        <view class="title_con">
+          <text class="title_item_head"></text>
+          <text class="title_item_content">{{item.label}}</text>
+          <text class="title_item_check" wx:if="{{item.isMust == 1}}">*</text>
+        </view>
+        <!-- 选择框 -->
+        <view wx:if="{{item.type == 0}}">
+          <view wx:for="{{item.list}}" wx:for-item="chooseItem" class="chooseBox {{choosed[item.id]==chooseItem.name?'active':''}}" bindtap="chooseType" data-name="{{chooseItem.name}}" data-id="{{item.id}}" data-index="{{outIndex}}">{{chooseItem.name}}</view>
+          <view class="chooseBox {{choosed[item.id]=='自定义'?'active':''}}" bindtap="chooseType" data-name="自定义" data-index="{{outIndex}}" data-id="{{item.id}}">自定义</view>
+          <input wx:if="{{choosed[item.id]=='自定义'}}" class="chooseInput" style="height:50rpx"	placeholder-class="chooseInputPlaceholder"  placeholder="请输入自定义(字数<20)" bindinput="customerType" data-index="{{outIndex}}"/>
+        </view>
+        <!-- textarea -->
+        <view wx:if="{{item.type == 1 || item.type == 2}}">
+          <textarea  class="chooseInput" bindinput="customerType" data-index="{{outIndex}}"	placeholder-class="chooseInputPlaceholder" placeholder="{{item.placeholder}}"></textarea>
+        </view>
+        <!-- 数字输入框  -->
+        <view wx:if="{{item.type == 3}}">
+          <input  class="chooseInput" style="height:50rpx" bindinput="customerType" data-index="{{outIndex}}"	placeholder-class="chooseInputPlaceholder" placeholder="{{item.placeholder}}" />
+        </view>
+      </block>
+
+      <view wx:if="{{isAnswer}}" class="answeredCon" bindlongtap="copyText" data-message="{{answerText}}">
+        <view class="answeredTitle">生成的内容如下：</view>
+        <view class="answeredText">{{answerText}}</view>
+      </view>
+    </view>
+  </scroll-view>
+  <button class="ljkt_btn" bindtap="goGenText" disabled="{{sendButtonCanUse}}">开始AI生成</button>
+</view>

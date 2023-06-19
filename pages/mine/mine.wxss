@@ -1,0 +1,55 @@
+.scroller_view{
+  background: -webkit-linear-gradient(top,rgb(0, 0, 0),rgb(19, 23, 41),#1e2d72);
+  height: 100vh;
+}
+
+.userInfo_container:first-child{
+  height: 150rpx;
+}
+.userInfo_container{
+  color: #ffffff;
+  border-bottom: 1rpx solid rgba(121, 121, 121, 0.247);
+  width: 100vw;
+}
+
+.userOtherInfo_con{
+  height: 100rpx;
+  padding-left: 10rpx;
+  line-height: 100rpx;
+}
+.userOtherInfo_con .title{
+  width: 70vw;
+  display: inline-block;
+}
+
+
+.home-header {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  padding: 14rpx 22rpx;
+  box-sizing: border-box;
+  border-radius: 0 0 10rpx 10rpx;
+}
+.user-image {
+  display: block;
+  width: 146rpx;
+  height: 146rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 50rpx;
+}
+
+.userInfo_value{
+  color: rgb(255, 255, 255);
+  width: 20vw;
+  display: inline-block;
+  text-align: right;
+}
+
+.sjjs button{
+  background-color: #fdc200;
+  color: #000000;
+  margin: 0 10rpx;
+}

@@ -1,0 +1,4 @@
+<button bindtap="start_say">录音</button>
+
+
+<button bindtap="end_say">结束</button>
