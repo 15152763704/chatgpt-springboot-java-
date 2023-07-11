@@ -26,3 +26,11 @@
  **3. AI百宝箱-你身边的AI创作师-文章概括总结小说个性签名节日祝福发言稿短视频脚本等等** 
 
 ![输入图片说明](readMeImage/userlmn_47c1340c0cea1a95568d3314483950e5.png)
+
+ **4. 会员管理** 
+
+![输入图片说明](readMeImage/userlmn_5cc6700ff7ea82362695a2ecb2e87707.png)
+
+
+
+
