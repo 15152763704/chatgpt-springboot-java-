@@ -1,0 +1,86 @@
+<scroll-view scroll-y="true" scroll-top="{{messageScrollTop}}" style="height:calc( 100% - 150rpx );" class="scroll_view_bac"animation="{{animation_2}}"
+  	enhanced="true"		bindscroll="loadPerPage" >
+    <view class="computed_scroll_heiht">
+      <view wx:for="{{messageList}}" wx:for-item="i" wx:for-index="iIndex">
+        <view class="padding clearfix" wx:if="{{i.messageRole == 'user'}}"  bindlongtap="copyText" data-message="{{i.message}}">
+            <view class="right-message padding_half">
+                <text wx:if="{{i.message}}"  >{{i.message}}</text>
+                <image wx:if="{{i.imgList}}" style="max-width:150px;max-height:120px" src="{{i.imgList}}"></image>
+                <map wx:if="{{i.map}}" style="width: 220px; height: 160px;"
+                    latitude="{{latitude}}"
+                    longitude="{{longitude}}"
+                    scale="16"
+                    markers="{{markers}}"
+                    covers="{{covers}}"
+                    >
+                </map>
+            </view>
+        </view>
+        <view class="padding clearfix" wx:if="{{i.messageRole == 'assistant'}}" bindlongtap="copyText" data-message="{{i.message}}">
+            <view class="left-message padding_half">
+                <text style="font-size: 30rpx;font-weight: 600;">{{i.message}}</text>
+                <view wx:if="{{i.messageType == 0}}" class="messageChoosedCon">
+                  <!-- <view wx:for="{{i.chooseList}}" wx:for-item="chooseItem" class="chooseBox {{answeredList[iIndex]==chooseItem.name?'active':''}}" 
+                  bindtap="answeredChoose" data-name="{{chooseItem.name}}"  data-index="{{iIndex}}">{{chooseItem.name}}</view> -->
+                  <radio-group bindchange="radioChange">
+                    <label style="display: flex;" wx:for="{{i.chooseList}}" wx:for-item="chooseItem" >
+                      <view class="weui-cell__hd">
+                        <radio value="{{chooseItem.name}}" disabled="{{i.id==true}}" />
+                      </view>
+                      <view class="radioName">{{chooseItem.name}}</view>
+                    </label>
+                  </radio-group>
+                </view>
+                <view wx:if="{{i.messageType == 1 || i.messageType == 2|| i.messageType == 3}}" class="messagePlaceholderCon">
+                  <text>{{i.messagePlaceholder}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view class="toast_wait" wx:if="{{show_wait}}"><text>{{wait_content}}</text></view>
+    </view>
+</scroll-view>
+<view class="wa-row send_container" wx:if="{{!isHideSendCon}}" >
+    <view bindtap="trigger_yy" ><image src="{{yy.yy_send_image_src}}" class="yy_send_icon" ></image></view>
+    <view style="padding-left: 20rpx;flex: 0 0 75%;box-sizing: border-box; max-width: calc( 100% - 280rpx );">
+        <input focus="{{sendInputFocus}}" placeholder="输入您想问的..."  bindinput="sendInfoOfSendValueInput"  value="{{sendInfoValue}}"  class="sendInput" wx:if="{{yy.yy_flag == false}}"/>
+        <!-- 腾讯 一句话识别模式 -->
+        <button class="longTabTalk"  wx:else="" bindlongpress="startRecorderManager" bindtouchend="stopRecorderManager" bindtouchmove="cancelRecorderManager">按住说话 松开结束</button>
+    </view>
+    <button class="send_button" type="primary" size="mini" bindtap="sendInfo" disabled="{{sendButtonCanUse}}"  wx:if="{{yy.yy_flag == false}}">发送</button>
+</view>
+
+<van-popup
+  show="{{ popupShow }}"
+  round
+  position="bottom"
+  custom-style="height: 50%; background-color: transparent"
+  duration="100"
+>
+    <view class="contaniner">
+        <view class="icon-view iv-s">
+            <van-icon name="success" color="#ffffff" size="26" bindtap="onSuccess"/>
+        </view>
+        <view class="icon-view iv-c">
+            <van-icon name="cross" color="#ffffff" size="26" bindtap="onClose"/>
+        </view>
+        <image src="/image/yy.png" class="iv-yy" bindlongpress="startRecorderManager"  bindtouchend="stopRecorderManager"></image>
+    </view>
+</van-popup>
+<view class="box" wx:if="{{isLuyin}}">
+    <van-loading color="#ffffff" size="18px">
+        <text style="color: #ffffff;">正在录音...</text>
+    </van-loading>
+</view>
+<view class="box-input" wx:if="{{resShow}}">
+    <van-field
+        model:value="{{tempSendInfoValue}}"
+        bind:blur="bindTempSendInfoValue"
+        type="textarea"
+        placeholder=""
+        maxlength="50"
+        border="{{ false }}"
+        custom-style="padding: 0; background-color: transparent; color: #ffffff;"
+    />
+    <text style="color: #ffffff; font-size: 30rpx; position: absolute; bottom: -80rpx; right: 20rpx; letter-spacing: 1rpx; color: #515468;">轻触气泡可以修改文字</text>
+</view>

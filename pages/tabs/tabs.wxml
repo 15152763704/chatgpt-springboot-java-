@@ -16,8 +16,8 @@
 >
   <block wx:for="{{tabs}}" wx:key="title" wx:for-item="item">
     <scroll-view class="tab-scroll-content" slot="tab-content-{{index}}" scroll-y="true" scroll-top="{{0}}"   animation="{{1}}">
-      <view  class="tab-content" wx:for="{{item.list}}" wx:for-item="fun" bindtap="goXiaoshuo" data-id="{{fun.id}}"  data-fun="{{fun.functionName}}">
-        <image src="{{fun.logo}}" />
+      <view  class="tab-content" wx:for="{{item.list}}" wx:for-item="fun" bindtap="goXiaoshuo" data-writetype="{{fun.writeType}}" data-id="{{fun.id}}"  data-fun="{{fun.functionName}}">
+        <image src="{{ip + fun.logo}}" 	lazy-load="true"/>
         <view class="detail_title">{{fun.functionName}}</view>
         <view  class="detail_description">{{fun.description}}</view>
       </view>

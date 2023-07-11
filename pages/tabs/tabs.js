@@ -4,6 +4,8 @@ Page({
     tabs: [],
     activeTab: 0,
 
+    ip:app.globalData.ip
+
 
   },
 
@@ -27,26 +29,38 @@ Page({
   },
 
   goXiaoshuo(e){
-    wx.navigateTo({
-      url: "/pages/tabXiaoshuo/tabXiaoshuo?id=" + e.currentTarget.dataset.id  + '&title=' + e.currentTarget.dataset.fun
-  })
+    if(e.currentTarget.dataset.writetype == "1"){
+      wx.navigateTo({
+        url: "/pages/tabXiaoshuo/tabXiaoshuo?id=" + e.currentTarget.dataset.id  + '&title=' + e.currentTarget.dataset.fun
+      })
+    }else{
+      wx.navigateTo({
+        url: "/pages/messageTemplate/messageTemplate?id=" + e.currentTarget.dataset.id  + '&title=' + e.currentTarget.dataset.fun
+      })
+    }
   },
 
   //初始化页面数据
   initData(){
     let that = this 
-    wx.request({
-      url: app.globalData.ip+'/chatFunction/findList',
-      method: "GET",
-      header:{
-        'Authorization': 'Bearer '+app.globalData.token
-      },
-      success: function(res) {
-        that.setData({
-          tabs:res.data.data
-        })
-      },
-    })
+    if(app.globalData.bbxData){
+      that.setData({
+        tabs:app.globalData.bbxData
+      })
+    }else{
+      wx.request({
+        url: app.globalData.ip+'/chatFunction/findList',
+        method: "GET",
+        header:{
+          'Authorization': 'Bearer '+app.globalData.token
+        },
+        success: function(res) {
+          that.setData({
+            tabs:res.data.data
+          })
+        },
+      })
+    }
   },
 
 })

@@ -3,6 +3,7 @@ var getData = require('../../utils/util.js')
 // import encoding from '../../utils/encoding.js'	// 引入js
 import encode from '../../utils/encode'
 const recorderManager = wx.getRecorderManager()
+var plugin = requirePlugin("WechatSI")
 var wxst; //语音websocket
 var status = 0;  // 音频的状态
 var iatResult = [] // 识别结果
@@ -14,6 +15,9 @@ const searchoptions = {
   format: 'PCM',//音频格式
   frameSize: 5,//指定帧大小，单位 KB
 }
+const innerAudioContext = wx.createInnerAudioContext({
+  useWebAudioImplement: false // 是否使用 WebAudio 作为底层音频驱动，默认关闭。对于短音频、播放频繁的音频建议开启此选项，开启后将获得更优的性能表现。由于开启此选项后也会带来一定的内存增长，因此对于长音频建议关闭此选项
+})
 
 
 
@@ -30,6 +34,7 @@ Page({
 
     sendInfo:{},
     sendInfoValue:'',//发送输入框input值
+    tempSendInfoValue:'未识别到内容',//临时识别的文本
 
     messageScrollTop:0,//设置的竖向滚动条位置
   
@@ -72,7 +77,13 @@ Page({
       startStatus: 1,
       moveToCancel: false
     },
-          
+    
+    popupShow: false,
+    isLuyin: false,
+    resShow: false,
+
+
+    textToVoice:false,//文字转语音图标按钮显示隐藏
 
 
 
@@ -100,51 +111,58 @@ Page({
     this.animation_2 = wx.createAnimation()
   },
   onShow: function() {
-    var that = this;
-    recorderManager.onStart(() => {
-      //开始录音时触发
-      status = 0;
-      iatResult = []
-      console.log('recorder start')
-    });
-    recorderManager.onError((res) => { 
-      //错误回调
-      console.log(res);
-    });
-    recorderManager.onStop((res) => {
-      //结束录音时触发
-      console.log('recorder stop', res)
-      status = 2;
-      var sendsty = '{"data":{"status":2,"audio":"","format":"audio/L16;rate=8000","encoding":"raw"}}'
-      if(wxst){
-        wxst.send({
-          data: sendsty
-        })
-      }
-    });
-    recorderManager.onFrameRecorded((res) => {
-    console.log('fram',res)
-    //每帧触发
-      const {frameBuffer } = res
-      var int16Arr = new Int8Array(res.frameBuffer);
-      const base64 = wx.arrayBufferToBase64(int16Arr)
-      switch (status) {
-        case 0:
-          status = 1;
-          var sendsty = '{"common":{"app_id":"3e7ed421"},"business":{"language":"zh_cn","domain":"iat","accent":"mandarin","dwa":"wpgs","vad_eos":1000},"data":{"status":0,"format":"audio/L16;rate=8000","encoding":"raw","audio":"' + base64 + '"}}'
-          wxst.send({ data: sendsty})
-          break;
-        case 1:
-          var sendsty = '{"data":{"status":1,"format":"audio/L16;rate=8000","encoding":"raw","audio":"' + base64 + '"}}'
-          wxst.send({data: sendsty})
-          break;
-        default:
-          console.log("default");
-      }
-    })
+    // var that = this;
+    // recorderManager.onStart(() => {
+    //   //开始录音时触发
+    //   status = 0;
+    //   iatResult = []
+    //   console.log('recorder start')
+    // });
+    // recorderManager.onError((res) => { 
+    //   //错误回调
+    //   console.log(res);
+    // });
+    // recorderManager.onStop((res) => {
+    //   //结束录音时触发
+    //   console.log('recorder stop', res)
+    //   status = 2;
+    //   var sendsty = '{"data":{"status":2,"audio":"","format":"audio/L16;rate=8000","encoding":"raw"}}'
+    //   if(wxst){
+    //     wxst.send({
+    //       data: sendsty
+    //     })
+    //   }
+    // });
+    // recorderManager.onFrameRecorded((res) => {
+    // console.log('fram',res)
+    // //每帧触发
+    //   const {frameBuffer } = res
+    //   var int16Arr = new Int8Array(res.frameBuffer);
+    //   const base64 = wx.arrayBufferToBase64(int16Arr)
+    //   switch (status) {
+    //     case 0:
+    //       status = 1;
+    //       var sendsty = '{"common":{"app_id":"3e7ed421"},"business":{"language":"zh_cn","domain":"iat","accent":"mandarin","dwa":"wpgs","vad_eos":1000},"data":{"status":0,"format":"audio/L16;rate=8000","encoding":"raw","audio":"' + base64 + '"}}'
+    //       wxst.send({ data: sendsty})
+    //       break;
+    //     case 1:
+    //       var sendsty = '{"data":{"status":1,"format":"audio/L16;rate=8000","encoding":"raw","audio":"' + base64 + '"}}'
+    //       wxst.send({data: sendsty})
+    //       break;
+    //     default:
+    //       console.log("default");
+    //   }
+    // })
   },
   onHide:function(){
     // 页面隐藏
+    let _this = this
+    _this.setData({
+      popupShow: false,
+      isLuyin: false,
+      resShow: false
+    })
+    innerAudioContext.stop()
   },
   onUnload:function(){
     // 页面关闭
@@ -263,6 +281,13 @@ Page({
       ['sendInfo.message']:e.detail.value,
     })
   },
+  bindTempSendInfoValue(e){
+    console.log(e)
+    this.data.tempSendInfoValue = e.detail.value
+    this.setData({
+      tempSendInfoValue:e.detail.value,
+    })
+  },
   // 校验输入框是否有内容
   checkSendInfoValue(){
     if(this.data.sendInfo.message == '' || this.data.sendInfo.message == undefined || this.data.sendInfo.message.trim() == ''){
@@ -275,42 +300,12 @@ Page({
     }
     return true
   },
-  // 校验剩余回答次数是否足够
-  checkLeftAnswerTime(){
-    let flag =  app.globalData.userInfo.canUseAnswer > 0
-    if(!flag){
-      wx.showToast({
-        title: '您的体验次数用完',
-        icon: 'none',
-        duration: 2000
-      })
-      setTimeout(() => {
-        wx.navigateTo({
-          url: '/pages/hy/hy',
-          events: {
-            // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
-            acceptDataFromOpenedPage: function(data) {
-              console.log(data)
-            },
-            someEvent: function(data) {
-              console.log(data)
-            }
-          },
-          success: function(res) {
-            // 通过eventChannel向被打开页面传送数据
-            res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
-          }
-        })
-      }, 2000);
-    }
-    return flag
-  },
   //发送信息
   sendInfo:function(){
     // 校验输入框是否有内容
     if(!this.checkSendInfoValue())return false
     // 校验剩余回答次数是否足够
-    if(!this.checkLeftAnswerTime())return false
+    if(!app.checkLeftAnswerTime())return false
 
     let that = this 
     //校验用户信息
@@ -350,6 +345,13 @@ Page({
     if(typeof arr === 'string') {  
         return arr;  
     }  
+    // console.log(arr.data)
+    // console.log(String.fromCharCode.apply(null, arr.data))
+    //console.log(arr.data.constructor)//ƒ Uint8Array() { [native code] }   ƒ ArrayBuffer() { [native code] }
+    if(arr.data.constructor.toString().indexOf('Uint8Array') !== -1){
+      return String.fromCharCode.apply(null, arr.data)
+    }
+
     var dataview=new DataView(arr.data);
     var ints=new Uint8Array(arr.data.byteLength);
     for(var i=0;i<ints.length;i++){
@@ -461,6 +463,9 @@ Page({
       })
       this.buildMessage('CHATAI','/image/adam.jpg','assistant',that.data.sendInfo.messageIndex + 1,'')
       let index = that.data.messageList.length - 1
+      this.setData({
+        ['messageList['+ index +'].textToVoice'] :true
+      })
       requestTask.onChunkReceived(function (taskRes){
         let text =  that.arrayBufferToString(taskRes)
         let arr = that.formatText(text)
@@ -474,7 +479,7 @@ Page({
             that.data.messageList.splice(index,1)
             that.data.waitLeftTime = json.waitTime
             let msg = '服务器忙,预计等待'+Math.floor(Math.round(that.data.waitLeftTime/1000)/60)+'分'+Math.round(that.data.waitLeftTime/1000)%60+'秒'
-            wx.setStorage({key:'chatWaitRabbitUnionId',data: json.unionId})
+            wx.setStorage({key:'chatWaitRabbitUnionId_message',data: json.unionId})
             that.setData({
               wait_content:msg,
               messageList:that.data.messageList,
@@ -498,7 +503,10 @@ Page({
               })
               if(json.choices[0].finish_reason == 'stop'){//响应结束
                 that.data.sendInfo.message = that.data.messageList[index].message
-                app.globalData.userInfo.canUseAnswer  =  app.globalData.userInfo.canUseAnswer  -  1
+                that.setData({
+                  ['messageList['+ index +'].textToVoice'] :false,
+                })
+
                 that.saveMessage();
               }
             }
@@ -534,7 +542,7 @@ Page({
     let that = this 
     that.data.findNeweastMessageTimer = setInterval(() => {
       wx.getStorage({
-        key: 'chatWaitRabbitUnionId',
+        key: 'chatWaitRabbitUnionId_message',
         success (res) {
           wx.request({
             url: app.globalData.ip+'/ChatMessageController/findNeweastMessage',
@@ -592,16 +600,17 @@ Page({
         userInfo: res
       })
       that.initLoadMsg()
-      that.initLoadAnsweredTime()
+      // that.initLoadAnsweredTime()
       that.initLoadRabbitJob()
-      that.initSocketConnect()
+      // that.initSocketConnect()
+      that.initBBXData()
     })
   },
   /** 初始化加载是否存在rabbit任务执行 */
   initLoadRabbitJob(){
     let that = this 
     wx.getStorage({
-      key: 'chatWaitRabbitUnionId',
+      key: 'chatWaitRabbitUnionId_message',
       success (res) {
         console.log(res)
         wx.request({
@@ -875,14 +884,83 @@ trigger_yy(){
         yy_send_image_src:'/image/yy_l.png',yy_flag:true
       }
     })
-    recorderManager.start({duration: 1})
+    // recorderManager.start({duration: 1})
+    // 可以通过 wx.getSetting 先查询一下用户是否授权了 "scope.record" 这个 scope
+    wx.getSetting({
+      success(res) {
+        if (!res.authSetting['scope.record']) {
+          wx.authorize({
+            scope: 'scope.record',
+            success () {
+              // 用户已经同意小程序使用录音功能，后续调用 wx.startRecord 接口不会弹窗询问
+            }
+          })
+        }
+      }
+    })
+
     
   }
 },
+onSuccess() {
+  let that = this
+  that.setData({
+    popupShow: false,
+    isLuyin: false,
+    resShow: false
+  },()=> {
+    console.log(that.data.tempSendInfoValue)
+    that.setData({
+      sendInfoValue:that.data.tempSendInfoValue,
+      ['sendInfo.message']:that.data.tempSendInfoValue,
+    })
+    that.sendInfo()
+  })
+},
+onClose() {
+  let that = this
+  that.setData({
+    popupShow: false,
+    isLuyin: false,
+    resShow: false
+  },()=> {
+    this.setData({
+      sendInfoValue:'',
+      ['sendInfo.message']:'',
+    })
+  })
+},
+onLuyin() {
+  let that = this
+  // wx.showToast({
+  //   title: '长按录音',
+  //   icon: 'none'
+  // })
+  that.setData({
+    isLuyin: true,
+    resShow: false
+  },()=> {
+    // setTimeout(() => {
+    //   that.setData({
+    //     isLuyin: false
+    //   })
+    // }, 3000);
+
+  })
+},
 // 开始录音
 startRecorderManager(e){
-    let that = this 
-    this.startLuyinAnm()
+    let that = this
+    wx.vibrateLong({
+      complete: function() {
+        that.setData({
+          popupShow: true,
+          isLuyin: true,
+          resShow: false
+        })
+      }
+    })
+    // this.startLuyinAnm()
     let option = {
       duration: 60000,//指定录音的时长，单位 ms
       sampleRate: 8000,//采样率
@@ -1020,11 +1098,13 @@ startRecorderManager(e){
 },
 // 松开按钮-结束录音
 stopRecorderManager:function(e){
-  recorderManager.stop()//结束录音
   var that = this
+  this.setData({popupShow: false,isLuyin:false})
+  recorderManager.stop()//结束录音
     //对停止录音进行监控
     recorderManager.onStop((res) => {
-      if(that.checkLuyinIsCancel()){return false}
+      console.log(res)
+      //if(that.checkLuyinIsCancel()){return false}
       //对录音时长进行判断，少于2s的不进行发送，并做出提示
       if(res.duration<1000){
         if(res.duration>15){
@@ -1328,11 +1408,77 @@ stopRecorderManager_javaSocket:function(e){
     this.setData({
       sendInfoValue:text,
       ['sendInfo.message']:text,
-      sendInputFocus:true
+      // sendInputFocus:true,
+      tempSendInfoValue:text,
+      isLuyin: false,
+      resShow: true,
+      popupShow:true
     })
     this.trigger_yy()
     wx.hideLoading()
-  }
+  },
+
+  // 文字转语音
+  textToViode(e){
+    wx.showLoading({
+      title: '语音转换中',
+    })
+    console.log(e.currentTarget.dataset.text.length)
+    if(e.currentTarget.dataset.text.length < 450){
+      plugin.textToSpeech({
+        lang: "zh_CN",
+        tts: true,
+        content: e.currentTarget.dataset.text,
+        success: function(res) {
+            console.log("succ tts", res.filename)   
+            // innerAudioContext.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
+            // innerAudioContext.play() // 播放
+            // innerAudioContext.pause() // 暂停
+            // innerAudioContext.stop() // 停止
+            innerAudioContext.src = res.filename
+            innerAudioContext.play()
+            wx.hideLoading()
+        },
+        fail: function(res) {
+            console.log("fail tts", res)
+            wx.hideLoading()
+        }
+      })
+    }else{
+      wx.request({
+        url: app.globalData.ip + '/TencentApiController/textToVideo',
+        data: { text: e.currentTarget.dataset.text},
+        timeout:60000,
+        header:{
+          'Authorization': 'Bearer '+app.globalData.token
+        },
+        method: "GET",
+        success:function(res){
+            innerAudioContext.src = res.data.data
+            innerAudioContext.play()
+        },
+        complete:function(){
+          wx.hideLoading()
+        }
+      })
+    }
+  },
+
+
+  // 初始化百宝箱 数据
+  initBBXData(){
+    let that = this 
+    wx.request({
+      url: app.globalData.ip+'/chatFunction/findList',
+      method: "GET",
+      header:{
+        'Authorization': 'Bearer '+app.globalData.token
+      },
+      success: function(res) {
+        app.globalData.bbxData = res.data.data
+      },
+    })
+  },
 
 
 })

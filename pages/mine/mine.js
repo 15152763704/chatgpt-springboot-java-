@@ -4,6 +4,7 @@ Page({
         userInfo: {},
         zcTime:'',//注册时间
         canUseTime:0,
+        expireTimeyyyyMMdd:'',//格式化后的会员有效期时间
     },
     goPage:function(event){
         console.log(event.currentTarget.dataset.log);
@@ -20,7 +21,8 @@ Page({
       //调用应用实例的方法获取全局数据
       this.setData({
         userInfo:app.globalData.userInfo,
-        canUseTime: app.globalData.userInfo.canUseAnswer 
+        canUseTime: app.globalData.userInfo.canUseAnswer ,
+        expireTimeyyyyMMdd:this.initzcTime(app.globalData.userInfo.expireTime)
       })
     },
     initzcTime:function(val){
@@ -28,9 +30,7 @@ Page({
       let oYear = oDate.getFullYear(),
       oMonth = oDate.getMonth() + 1,
       oDay = oDate.getDate();
-      this.setData({
-        zcTime:oYear+'-'+oMonth+'-'+oDay
-      })
+      return oYear+'-'+(oMonth<10?'0'+oMonth:oMonth)+'-'+(oDay<10?'0'+oDay:oDay)
     },
 
   goHyPage(){

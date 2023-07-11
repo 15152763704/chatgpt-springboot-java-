@@ -27,7 +27,8 @@
         <!-- <image src="{{i.img}}" /> -->
         <view style="padding-left:10px">
             <text class="title">剩余体验次数：</text>
-            <text class="userInfo_value" style="color: red;">{{canUseTime}}次</text>
+            <text class="userInfo_value" style="color: red;" wx:if="{{canUseTime >= 0}}">{{canUseTime}}次</text>
+            <text class="userInfo_value" wx:else>不限</text>
         </view>
     </view>
 
@@ -36,6 +37,13 @@
         <view style="padding-left:10px">
             <text class="title">会员等级：</text>
             <text class="userInfo_value">{{userInfo.hyName}}</text>
+        </view>
+    </view>
+
+    <view class="userInfo_container userOtherInfo_con" wx:if="{{userInfo.expireTime}}">
+        <view style="padding-left:10px">
+            <text class="title" style="width:430rpx">会员有效期：</text>
+            <text class="userInfo_value" style="width:250rpx;">{{expireTimeyyyyMMdd}}</text>
         </view>
     </view>
 

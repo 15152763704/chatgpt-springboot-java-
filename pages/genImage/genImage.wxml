@@ -1,0 +1,44 @@
+
+<view >
+  <scroll-view class="p_con" scroll-y="true" scroll-top="{{scrollTop}}">
+    <view style="margin-left: 40rpx;padding-bottom: 80rpx;">
+
+        <view class="title_con">
+          <text class="title_item_head"></text>
+          <text class="title_item_content">图片描述</text>
+          <text class="title_item_check">*</text>
+        </view>
+        <textarea  class="chooseInput" bindinput="customerType"	
+        placeholder-class="chooseInputPlaceholder" placeholder="请输入图片描述(例如：一只雪白优雅且趴在床上的猫,看起来很好奇的样子)"></textarea>
+
+        <view class="title_con">
+          <text class="title_item_head"></text>
+          <text class="title_item_content">图片尺寸</text>
+          <text class="title_item_check">*</text>
+        </view>
+        <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+          <view class="picker" style="color: #ffffff;">
+            当前选择：{{array[index]}}
+          </view>
+        </picker>
+
+        <view class="title_con">
+          <text class="title_item_head"></text>
+          <text class="title_item_content">图片数量</text>
+          <text class="title_item_check">*</text>
+        </view>
+        <picker bindchange="bindNumChange" value="{{numIndex}}" range="{{numArry}}">
+          <view class="picker" style="color: #ffffff;">
+            当前选择：{{numArry[numIndex]}}
+          </view>
+        </picker>
+
+        <view wx:if="{{imageList.length > 0 }}" style="margin-top: 100rpx;">
+          <text style="color: #ffffff;height: 200rpx;line-height: 100rpx;">生成的图片如下:</text>
+          <image wx:for="{{imageList}}" src="{{item}}" bindtap="preview" data-src="{{item}}"></image>
+        </view>
+       
+    </view>
+  </scroll-view>
+  <button class="ljkt_btn" bindtap="goGenImage">开始AI生成</button>
+</view>

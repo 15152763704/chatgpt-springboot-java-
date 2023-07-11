@@ -3,6 +3,13 @@ page{
 }
 .hy_banner{
   height: calc( 100vh - 900rpx );
+  text-align: center;
+  
+}
+.hy_banner image{
+  height: 400rpx;
+  width: 440rpx;
+  margin-top: calc( 50vh - 650rpx);
 }
 
 
@@ -118,4 +125,3 @@ page{
   font-size: 34rpx;
   font-weight: 500;
 }
-

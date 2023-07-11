@@ -1,5 +1,7 @@
 <view>
-  <view class="hy_banner"></view>
+  <view class="hy_banner">
+    <image class="vip_class" src="/image/vip.png"></image>
+  </view>
 
   <view class="hy_container"> 
     <view class="hy_zs_container">

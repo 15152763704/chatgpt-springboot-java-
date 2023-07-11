@@ -43,7 +43,7 @@ Page({
   initLoadRabbitJob(){
     let that = this 
     wx.getStorage({
-      key: 'chatWaitRabbitUnionId',
+      key: 'chatWaitRabbitUnionId_genText',
       success (res) {
         console.log(res)
         wx.request({
@@ -133,6 +133,8 @@ Page({
           }
         }
       }
+      // 校验剩余回答次数是否足够
+      if(!app.checkLeftAnswerTime())return false
 
       const requestTask = wx.request({
         url: app.globalData.ip+'/chatFunctionDetail/generateText',
@@ -169,7 +171,7 @@ Page({
             console.log(json)
             that.data.waitLeftTime = json.waitTime
             let msg = '服务器忙,预计等待'+Math.floor(Math.round(that.data.waitLeftTime/1000)/60)+'分'+Math.round(that.data.waitLeftTime/1000)%60+'秒'
-            wx.setStorage({key:'chatWaitRabbitUnionId',data: json.unionId})
+            wx.setStorage({key:'chatWaitRabbitUnionId_genText',data: json.unionId})
             that.setData({
               answerText:msg,
               isAnswer:true,
@@ -193,7 +195,7 @@ Page({
                 scrollTop:that.data.scrollTop +1
               })
               if(json.choices[0].finish_reason == 'stop'){//响应结束
-                
+                app.reduceCanUseAnswerTime()
               }
             }
             if (json.choices &&  json.choices[0].finish_reason != undefined && json.choices[0].finish_reason == "length") {
@@ -229,7 +231,7 @@ Page({
     let that = this 
     that.data.findNeweastMessageTimer = setInterval(() => {
       wx.getStorage({
-        key: 'chatWaitRabbitUnionId',
+        key: 'chatWaitRabbitUnionId_genText',
         success (res) {
           wx.request({
             url: app.globalData.ip+'/FunctionMessageController/findNeweastAnsweredById',
