@@ -87,9 +87,7 @@ App({
     userInfo:null,
     token: null,
     answeredTime:0,
-    // ip:"https://"+"inner.luqingwu.top"+":80",
-    ip:"https://"+"inner.luqingwu.top"+":9099",
-    // ip:"https://"+"127.0.0.1"+":80",
+    ip:"https://"+"127.0.0.1"+":80",
     // wsip:"ws://"+"192.168.1.173"+":80"
   }
 })
