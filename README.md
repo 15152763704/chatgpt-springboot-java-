@@ -9,10 +9,11 @@
 - 微信小程序原生开发 
 ###   后台：
 - java
-- - springboot
+- springboot
 - mysql
 - 百度、腾讯、科大讯飞语音识别技术
 - 微信支付
-
- 
-
+# 功能截图
+![输入图片说明](readMeImage/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20230711120531.jpg)
+![输入图片说明](readMeImage/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20230711120535.jpg)
+智能AI对话，
